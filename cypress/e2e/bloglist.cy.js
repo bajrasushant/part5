@@ -6,7 +6,13 @@ describe("Blog app", function () {
       username: "test",
       password: "test@123",
     };
+    const user2 = {
+      name: "Sushant test",
+      username: "anothertest",
+      password: "test@123",
+    };
     cy.request("POST", "http://localhost:3001/api/users", user);
+    cy.request("POST", "http://localhost:3001/api/users", user2);
     cy.visit("http://localhost:5173/");
   });
 
@@ -49,7 +55,7 @@ describe("Blog app", function () {
       });
     });
 
-    it.only("A blog can be created", function () {
+    it("A blog can be created", function () {
       cy.contains("new form").click();
       cy.get("#title").type("test title");
       cy.get("#author").type("test writer");
@@ -58,7 +64,46 @@ describe("Blog app", function () {
       cy.get(".success")
         .should("contain", "a new blog test title by test writer added")
         .and("have.css", "color", "rgb(0, 128, 0)");
-      cy.get(".blog_list").should("contain", "test title").and("contain", "test writer");
+      cy.get(".blog_list")
+        .should("contain", "test title")
+        .and("contain", "test writer");
     });
+
+    describe("When a blog is created", function () {
+      beforeEach(() => {
+        cy.contains("new form").click();
+        cy.get("#title").type("like test");
+        cy.get("#author").type("test writer");
+        cy.get("#url").type("https://www.testwebsite.com");
+        cy.get("#submit-new-blog").click();
+        cy.contains("view").click();
+      });
+
+      describe("a blog can be liked", function () {
+        it("initially like is zero", function () {
+          cy.get(".blogLikes").contains("0");
+        });
+        it("likes increase after the like button is clicked", function () {
+          cy.get(".like-button").click();
+          cy.get(".blogLikes").contains("1");
+        });
+      });
+
+      describe("a blog can be deleted", function () {
+        it("remove button is shown", function () {
+          cy.contains("remove");
+        });
+
+        it.only("when remove button clicked blog removed", function () {
+          cy.contains("remove").click();
+          cy.should("not.contain", "like test");
+          cy.should("not.contain", "test writer");
+          cy.get(".success")
+            .should("contain", "successfully deleted")
+            .and("have.css", "color", "rgb(0, 128, 0)");
+        });
+      });
+    });
+
   });
 });

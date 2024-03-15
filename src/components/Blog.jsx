@@ -47,11 +47,11 @@ const Blog = ({ blog, editBlog, deleteBlog, signedInUser }) => {
           <a className="blogUrl" href={`${blog.url}`}>{blog.url}</a>
           <div className="blogLikes">
             likes {blogObject.likes}
-            <button onClick={incrementLike}>like</button>
+            <button className="like-button" onClick={incrementLike}>like</button>
           </div>
           <div className="blogUsername">{blog.user.username}</div>
           {signedInUser.username === blog.user.username && (
-            <button onClick={removeBlog}>remove</button>
+            <button className="delete-button" onClick={removeBlog}>remove</button>
           )}
         </div>
       </div>
